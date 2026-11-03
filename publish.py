@@ -1,13 +1,17 @@
 #!/usr/bin/env python3
 """Publish a Neo build: GitHub Release + Updater JSON entry.
 
-usage: publish.py <lineage-*.zip> [--org ORG] [--repo releases] [--notes FILE] [--dry-run]
+usage: publish.py <lineage-*.zip> [--org ORG] [--repo releases] --changelog FILE [--dry-run]
 
 The Lineage Updater reads https://raw.githubusercontent.com/<org>/<repo>/main/<device>.json,
 a list of builds with a "files" array. Build time, SDK level, patch level and the
 A/B streaming offsets are taken from META-INF/com/android/metadata in the zip, so
 the entry always matches the build (the app rejects builds whose datetime is not
 newer than ro.build.date.utc or whose os_sdk_level is lower than the device's).
+
+The changelog is copied to changelogs/<tag>.md and linked from the entry as
+"changelog_url". The Updater ignores that key: NetworkUpdate and NetworkUpdateFile
+are annotated @JsonIgnoreUnknownKeys.
 """
 import argparse, hashlib, json, os, re, shutil, subprocess, sys, zipfile
 
@@ -33,7 +37,8 @@ def main():
     ap.add_argument("zip")
     ap.add_argument("--org", default=os.environ.get("NEO_GITHUB_ORG", "Ingres-lab"))
     ap.add_argument("--repo", default="releases")
-    ap.add_argument("--notes", help="release notes file (markdown)")
+    ap.add_argument("--changelog", "--notes", dest="changelog", required=True,
+                    help="changelog / release notes (markdown)")
     ap.add_argument("--dry-run", action="store_true")
     a = ap.parse_args()
 
@@ -57,8 +62,14 @@ def main():
     with open(dest + ".sha256", "w") as f:
         f.write(f"{digest}  {name}\n")
 
+    if not os.path.isfile(a.changelog):
+        sys.exit(f"changelog not found: {a.changelog}")
     tag = f"{device}-{version}-{date}"
     url = f"https://github.com/{a.org}/{a.repo}/releases/download/{tag}/{name}"
+    cl_rel = f"changelogs/{tag}.md"
+    os.makedirs(os.path.join(here, "changelogs"), exist_ok=True)
+    shutil.copyfile(a.changelog, os.path.join(here, cl_rel))
+    cl_url = f"https://raw.githubusercontent.com/{a.org}/{a.repo}/main/{cl_rel}"
     entry = {
         "datetime": int(md["post-timestamp"]),
         "type": rtype.lower(),
@@ -72,11 +83,12 @@ def main():
             "os_sdk_level": int(md["post-sdk-level"]),
             "ota_property_files": md.get("ota-property-files"),
         }],
+        "changelog_url": cl_url,
     }
 
     cmd = ["gh", "release", "create", tag, dest, dest + ".sha256",
            "--repo", f"{a.org}/{a.repo}", "--title", f"Neo {version} {date} ({device})"]
-    cmd += ["--notes-file", a.notes] if a.notes else ["--notes", f"Neo {version} for {device}, built {date}."]
+    cmd += ["--notes-file", os.path.join(here, cl_rel)]
     run(cmd, a.dry_run)
 
     jpath = os.path.join(here, f"{device}.json")
@@ -88,7 +100,7 @@ def main():
         f.write("\n")
     print(json.dumps(entry, indent=2))
 
-    run(["git", "-C", here, "add", f"{device}.json"], a.dry_run)
+    run(["git", "-C", here, "add", f"{device}.json", cl_rel], a.dry_run)
     run(["git", "-C", here, "commit", "-m", f"{device}: Neo {version} {date}"], a.dry_run)
     run(["git", "-C", here, "push"], a.dry_run)
 
