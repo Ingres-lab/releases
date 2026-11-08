@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Publish a Neo build: GitHub Release + Updater JSON entry.
 
-usage: publish.py <lineage-*.zip> [--org ORG] [--repo releases] --changelog FILE [--dry-run]
+usage: publish.py <lineage-*.zip> [--org ORG] [--repo releases] --changelog FILE
+                  [--prerelease] [--extra IMG ...] [--dry-run]
 
 The Lineage Updater reads https://raw.githubusercontent.com/<org>/<repo>/main/<device>.json,
 a list of builds with a "files" array. Build time, SDK level, patch level and the
@@ -39,6 +40,9 @@ def main():
     ap.add_argument("--repo", default="releases")
     ap.add_argument("--changelog", "--notes", dest="changelog", required=True,
                     help="changelog / release notes (markdown)")
+    ap.add_argument("--prerelease", action="store_true", help="mark the GitHub Release as a pre-release")
+    ap.add_argument("--extra", nargs="*", default=[],
+                    help="extra assets (e.g. boot.img, vendor_boot.img); a .sha256 is written for each")
     ap.add_argument("--dry-run", action="store_true")
     a = ap.parse_args()
 
@@ -86,9 +90,21 @@ def main():
         "changelog_url": cl_url,
     }
 
-    cmd = ["gh", "release", "create", tag, dest, dest + ".sha256",
+    extras = []
+    for e in a.extra:
+        src = os.path.abspath(e)
+        edest = os.path.join(out_dir, os.path.basename(src))
+        if not os.path.exists(edest):
+            shutil.copy2(src, edest)
+        with open(edest + ".sha256", "w") as f:
+            f.write(f"{sha256(edest)}  {os.path.basename(edest)}\n")
+        extras += [edest, edest + ".sha256"]
+
+    cmd = ["gh", "release", "create", tag, dest, dest + ".sha256", *extras,
            "--repo", f"{a.org}/{a.repo}", "--title", f"Neo {version} {date} ({device})"]
     cmd += ["--notes-file", os.path.join(here, cl_rel)]
+    if a.prerelease:
+        cmd.append("--prerelease")
     run(cmd, a.dry_run)
 
     jpath = os.path.join(here, f"{device}.json")
