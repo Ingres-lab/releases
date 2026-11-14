@@ -1,1 +1,42 @@
-[]
+[
+  {
+    "id": "6.6.144-neo-20261114-perf",
+    "kernel_version": "Linux version 6.6.144-4k-g6b77d0882077 (neo@ingres-lab) (Android (15071444, +pgo, +bolt, +lto, +mlgo, based on r596125) clang version 22.0.2 (https://android.googlesource.com/toolchain/llvm-project de03d430485c884861198b25459851f429cbdbad), LLD 22.0.2 (/mnt/disks/build-disk/src/googleplex-android/llvm-r596125-release/out/llvm-project/llvm de03d430485c884861198b25459851f429cbdbad)) # SMP PREEMPT Sat Nov 14 2026 NEO VORTEX SPECIAL OPTIMIZATION",
+    "profile": "perf",
+    "datetime": 1794647337,
+    "min_rom": {
+      "datetime": 1794646967
+    },
+    "download": {
+      "filename": "Neo-kernel-6.6.144-neo-20261114-perf-ingres.zip",
+      "url": "https://github.com/Ingres-lab/releases/releases/download/ingres-kernel-6.6.144-neo-20261114-perf/Neo-kernel-6.6.144-neo-20261114-perf-ingres.zip",
+      "sha256": "b82d903f0fed87b83fff644080c9f1e1adc907938e9980fc01947bf292a2d028",
+      "size": 53588827
+    },
+    "images": [
+      {
+        "partition": "vendor_dlkm",
+        "filename": "vendor_dlkm.img",
+        "logical": true,
+        "sha256": "c746900f7d002b56e1960330f97f8a62ff14e8ab8b6d1c9b7bc452dd6d2c7f41",
+        "size": 90062848
+      },
+      {
+        "partition": "vendor_boot",
+        "filename": "vendor_boot.img",
+        "logical": false,
+        "sha256": "2daef1c3aeb745875c047accdf3f657c2a7390e490a2dacef3f4c0cd4d180770",
+        "size": 100663296
+      },
+      {
+        "partition": "boot",
+        "filename": "boot.img",
+        "logical": false,
+        "sha256": "d4ea729c63177c8463a8367c1ffda1c20785f106771cb83497f13cba559a0697",
+        "size": 201326592
+      }
+    ],
+    "changelog": "# Neo kernel 6.6.144 (`perf`) \u2014 20261114\n\nKernel set for the POCO F4 GT / Redmi K50 Gaming (`ingres`): `boot.img`,\n`vendor_boot.img` and `vendor_dlkm.img`, built together from\n`kernel/xiaomi/sm8450` @ `6b77d0882077` with the Sony `msm-6.6` base, clang 22\nand ThinLTO. This is the kernel shipped in Neo 24.0 20261114.\n\n## What's new\n- **ASB-2026-11-02** (November 2026 Android security bulletin) merged: 78 commits\n  on top of ASB-2026-10-05.\n- **Battery charge counter fixed:** the ADSP reports \u00b5Ah, but the Xiaomi\n  `qti_battery_charger` driver multiplied by 1000 (nAh), overflowing `intval`\n  above ~2147 mAh. Above roughly 47% the charge counter went negative in Android\n  and batterystats.\n- **Panel:** the L10 backlight is restored when leaving AOD, so wake and\n  notification pulses no longer flash at full brightness first; the requested\n  flat/color-accuracy mode is kept across panel power-off.\n- **EVA/CVP:** DSP-side dma-buf fds are resolved through the fastrpc HLOS tgid\n  instead of the fastrpc process index.\n- **RTL8812AU/8821AU/8814AU** USB Wi-Fi driver (aircrack-ng, monitor mode and\n  injection) added to `vendor_dlkm`.\n- Default qdisc is `fq` (BBR pacing) and the default zram compressor is `lz4`.\n- `uname -v` starts with an English weekday so Settings shows the kernel build\n  date instead of \"Unavailable\".\n\n## Compatibility\n- **Requires ROM 20261114 or newer** (`ro.build.date.utc >= 1794646967`): the\n  modules were built against this ROM's vendor userspace.\n- `perf` profile: KernelSU-Next v3.4.2, NTSync, WALT/EPSS, 120 Hz command mode,\n  USB Wi-Fi monitor/injection, USB RNDIS, RTL-SDR (built, not auto-loaded),\n  user namespaces/checkpoint-restore.\n\n## Flash\nThe three images are one set \u2014 never flash a subset. Flash in this order into\none slot (`_a` or `_b`), then reboot:\n\n1. `vendor_dlkm` (logical, `/dev/block/mapper/vendor_dlkm_<slot>`) \u2014 must fit the\n   existing logical partition\n2. `vendor_boot` (`/dev/block/by-name/vendor_boot_<slot>`)\n3. `boot` (`/dev/block/by-name/boot_<slot>`)\n\nVerify the zip's `sha256`/`size` and each image's `size`/`sha256` against\n`manifest.json` before flashing.\n",
+    "changelog_url": "https://raw.githubusercontent.com/Ingres-lab/releases/main/changelogs/kernel/6.6.144-neo-20261114-perf.md"
+  }
+]
