@@ -1,5 +1,22 @@
 [
   {
+    "datetime": 1794646967,
+    "type": "unofficial",
+    "version": "24.0",
+    "files": [
+      {
+        "filename": "Neo-24.0-20261114-ingres.zip",
+        "sha256": "3eb581b9d7588648dbacc091ecd78f711cfdbfea71119973aff0a43a92b46a51",
+        "size": 2098093337,
+        "url": "https://github.com/Ingres-lab/releases/releases/download/ingres-24.0-20261114/Neo-24.0-20261114-ingres.zip",
+        "os_patch_level": "2026-10-01",
+        "os_sdk_level": 37,
+        "ota_property_files": "payload_metadata.bin:4853:185483,payload.bin:4853:2098085216,payload_properties.txt:2098090127:156,apex_info.pb:2186:1448,care_map.pb:3681:1125,metadata:69:679,metadata.pb:816:1322                        "
+      }
+    ],
+    "changelog_url": "https://raw.githubusercontent.com/Ingres-lab/releases/main/changelogs/ingres-24.0-20261114.md"
+  },
+  {
     "datetime": 1794043861,
     "type": "unofficial",
     "version": "24.0",
