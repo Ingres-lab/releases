@@ -7,6 +7,7 @@ LineageOS 24.0 (Android 17) · Linux 6.6.144 GKI vendor kernel · Security patch
 ## Highlights
 - **Faster kernel:** system calls +26%, Wine/Proton sync (ntsync) +9–40%, Vulkan dispatch +9–20%
 - **Pixel experience:** Pixel Launcher, Circle to Search, a working At a Glance, Google Sans Flex
+- **Native haptics:** a vibrator HAL built for the F4 GT's motor, with crisp tuned effects and the full Android haptics API
 - **A redesigned Neo Parts** with a Monet colour engine, game performance mode and three-finger screenshot
 - **AOD fixed:** no more bright flash when waking from always-on display
 
@@ -38,12 +39,18 @@ LineageOS 24.0 (Android 17) · Linux 6.6.144 GKI vendor kernel · Security patch
 - **Google Sans Flex** is the system font.
 - **Google Photos** sees an original Pixel XL, so it offers free unlimited original-quality backup. This needs spoofing turned on for Photos in Neo Parts.
 
+## Native haptics
+- **A new vibrator HAL for the F4 GT's own haptic driver** (Awinic AW86927), replacing Qualcomm's generic vibrator service.
+- **Waveforms designed for this motor.** Every effect is synthesized for the motor's resonance and streamed to the driver directly, instead of using stock presets. Each tap ends with a short braking pulse, so it stops instantly instead of buzzing.
+- **The full Android haptics API:** click, double click, heavy click, tick, texture tick, thud and pop effects; the composition primitives (click, light tick, low tick, quick rise, quick fall, slow rise, spin, thud); amplitude control. Apps and games that use rich haptics now get their real effects instead of a generic buzz.
+- The shoulder triggers and Circle to Search play the crisp "pop".
+
 ## Neo Parts
 - A new **Settings-style home screen** with grouped pages and coloured icons
 - **Monet engine:** colour styles, custom colours and a live preview
 - **Game performance:** per-game CPU floor (see Performance)
 - **Three-finger screenshot**
-- **New haptics:** a crisper vibration driver; triggers can play the "pop" effect
+- **Haptics page:** feel-test every effect and set the master vibration strength
 - **Diagnostics:** log capture and a battery recorder for tracking down shutdowns
 - Fixed: the trigger overlay's auto-edit no longer gets stuck
 
@@ -53,6 +60,7 @@ LineageOS 24.0 (Android 17) · Linux 6.6.144 GKI vendor kernel · Security patch
 - **Face + fingerprint together:** biometric prompts open with both ready. While face unlock scans, a sweeping arc is shown.
 
 ## Fixes
+- **Battery level guard (kernel):** the battery percentage can no longer stay far above the real charge. Some testers saw the phone shut down at 36–74%; the reported level now follows the battery gauge, and the phone powers off cleanly when it is really empty.
 - At a Glance's weather settings page no longer crashes.
 - The flashlight tile and At a Glance now use the same camera, so the flashlight card appears reliably.
 - Event-only buttons on At a Glance cards no longer show "App isn't installed".
