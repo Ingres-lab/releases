@@ -43,6 +43,8 @@ def main():
     ap.add_argument("--prerelease", action="store_true", help="mark the GitHub Release as a pre-release")
     ap.add_argument("--extra", nargs="*", default=[],
                     help="extra assets (e.g. boot.img, vendor_boot.img); a .sha256 is written for each")
+    ap.add_argument("--name", help="published zip name (default Neo-<ver>-<date>-<device>.zip)")
+    ap.add_argument("--title", help="release title (default 'Neo <ver> <date> (<device>)')")
     ap.add_argument("--dry-run", action="store_true")
     a = ap.parse_args()
 
@@ -58,7 +60,7 @@ def main():
     here = os.path.dirname(os.path.abspath(__file__))
     out_dir = os.path.join(here, "out")
     os.makedirs(out_dir, exist_ok=True)
-    name = f"Neo-{version}-{date}-{device}.zip"
+    name = a.name or f"Neo-{version}-{date}-{device}.zip"
     dest = os.path.join(out_dir, name)
     if not os.path.exists(dest):
         shutil.copy2(a.zip, dest)
@@ -101,7 +103,7 @@ def main():
         extras += [edest, edest + ".sha256"]
 
     cmd = ["gh", "release", "create", tag, dest, dest + ".sha256", *extras,
-           "--repo", f"{a.org}/{a.repo}", "--title", f"Neo {version} {date} ({device})"]
+           "--repo", f"{a.org}/{a.repo}", "--title", a.title or f"Neo {version} {date} ({device})"]
     cmd += ["--notes-file", os.path.join(here, cl_rel)]
     if a.prerelease:
         cmd.append("--prerelease")
@@ -117,7 +119,8 @@ def main():
     print(json.dumps(entry, indent=2))
 
     run(["git", "-C", here, "add", f"{device}.json", cl_rel], a.dry_run)
-    run(["git", "-C", here, "commit", "-m", f"{device}: Neo {version} {date}"], a.dry_run)
+    run(["git", "-C", here, "commit", "-m",
+         f"{device}: {a.title or f'Neo {version} {date}'}"], a.dry_run)
     run(["git", "-C", here, "push"], a.dry_run)
 
 if __name__ == "__main__":
