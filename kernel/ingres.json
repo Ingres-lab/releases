@@ -1,5 +1,45 @@
 [
   {
+    "id": "6.6.144-neo-20261117-perf",
+    "kernel_version": "Linux version 6.6.144-4k-gfa848f2374e4-dirty (neo@ingres-lab) (Android (15071444, +pgo, +bolt, +lto, +mlgo, based on r596125) clang version 22.0.2 (https://android.googlesource.com/toolchain/llvm-project de03d430485c884861198b25459851f429cbdbad), LLD 22.0.2 (/mnt/disks/build-disk/src/googleplex-android/llvm-r596125-release/out/llvm-project/llvm de03d430485c884861198b25459851f429cbdbad)) # SMP PREEMPT Tue Nov 17 2026 NEO VORTEX SPECIAL OPTIMIZATION",
+    "profile": "perf",
+    "datetime": 1794931664,
+    "min_rom": {
+      "datetime": 1794719265
+    },
+    "download": {
+      "filename": "Neo-kernel-6.6.144-neo-20261117-perf-ingres.zip",
+      "url": "https://github.com/Ingres-lab/releases/releases/download/ingres-kernel-6.6.144-neo-20261117-perf/Neo-kernel-6.6.144-neo-20261117-perf-ingres.zip",
+      "sha256": "6ffe66e48adef83a96f2af679d46170bb658d4aaa448b15e064de4c81f16ea77",
+      "size": 57295826
+    },
+    "images": [
+      {
+        "partition": "vendor_dlkm",
+        "filename": "vendor_dlkm.img",
+        "logical": true,
+        "sha256": "bce27012171e1bfd0829e73d656217a8d7b45ee4b3ae42f6902489b6591e1c87",
+        "size": 90316800
+      },
+      {
+        "partition": "vendor_boot",
+        "filename": "vendor_boot.img",
+        "logical": false,
+        "sha256": "9aaa3117b773231ef03d0d94bb8e0e78782dc0ed85219b81aa5d9c4a343989b4",
+        "size": 100663296
+      },
+      {
+        "partition": "boot",
+        "filename": "boot.img",
+        "logical": false,
+        "sha256": "829255e20960643ca85321e53a0ed1c60c21dbf6cff05bbc1bb5b8bc81b25977",
+        "size": 201326592
+      }
+    ],
+    "changelog": "# Neo kernel 6.6.144 (`perf`) \u2014 20261117\n\nKernel set for the POCO F4 GT / Redmi K50 Gaming (`ingres`): `boot.img`, `vendor_boot.img` and `vendor_dlkm.img`, built together. This is the kernel shipped in Neo OS 0.4 Beta.\n\n## What's new\n- **Lighter hardening.** Turned off four checks that cost time on every system call or kernel function: `HARDENED_USERCOPY` (`__check_object_size` was #5 in the AutoFDO profile), `MITIGATE_SPECTRE_BRANCH_HISTORY`, `RANDOMIZE_KSTACK_OFFSET` and `ARM64_PTR_AUTH_KERNEL`. Userspace pointer authentication stays on. Stack zero-initialization stays on because Qualcomm's IPA driver relies on it.\n- **ThinLTO**, and a re-recorded **AutoFDO profile (v3)**. The profile now also covers the vendor modules (Adreno `msm_kgsl`, display `msm_drm` and `ntsync`), using the new opt-in `AUTOFDO_MODULES` Kbuild switch.\n- **AOD wake flash fixed (L10 panel).** DCS `0x51` on this panel takes four bytes, and in hardware AOD the panel runs on the last two. Before leaving AOD, the driver now turns off panel dimming and loads the wake brightness into both halves, so the clock no longer flashes at the AOD level.\n- **AOD stays up.** The display driver leaves AOD only when an AOD-flagged layer disappears.\n\n## Measured (kbench, clocks locked, median of 7 runs, compared with 20261115)\n| Test | Gain |\n|---|---|\n| System calls | +26% |\n| ntsync (Wine / Proton) | +9\u201340% |\n| Vulkan dispatch (GPU driver) | +9\u201320% |\n| Cross-core wake-ups (sync-wake + game mode) | up to 6\u00d7 |\n\n18 of 21 benchmarks are faster on average across the A510 / A710 / X2 cores. Large reads from RAM-backed files are about 10% slower; this is being investigated.\n",
+    "changelog_url": "https://raw.githubusercontent.com/Ingres-lab/releases/main/changelogs/kernel/6.6.144-neo-20261117-perf.md"
+  },
+  {
     "id": "6.6.144-neo-20261115-perf",
     "kernel_version": "Linux version 6.6.144-4k-g6b6b2204fbdd (neo@ingres-lab) (Android (15071444, +pgo, +bolt, +lto, +mlgo, based on r596125) clang version 22.0.2 (https://android.googlesource.com/toolchain/llvm-project de03d430485c884861198b25459851f429cbdbad), LLD 22.0.2 (/mnt/disks/build-disk/src/googleplex-android/llvm-r596125-release/out/llvm-project/llvm de03d430485c884861198b25459851f429cbdbad)) # SMP PREEMPT Sun Nov 15 2026 NEO VORTEX SPECIAL OPTIMIZATION",
     "profile": "perf",
